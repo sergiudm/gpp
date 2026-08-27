@@ -34,18 +34,41 @@ jobs:
         with:
           path: oliver/auto_research_beamer_package/web-presentation/github-pages
       # One earlier deployment timed out while GitHub still reported updating_pages.
-      # Canceling it here releases the Pages lock; 404 is harmless once it is gone.
+      # Cancel it and wait for the Pages API to confirm that the lock is gone.
       - name: Clear stale Pages deployment lock
-        continue-on-error: true
+        timeout-minutes: 5
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          curl --silent --show-error --location --request POST \
+          set -u
+          pages_api="https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/c72a551ea812dcb8426db0bb5b7270972002be11"
+          cancel_code="$(curl --silent --show-error --location --request POST \
+            --output /tmp/pages-cancel.json --write-out '%{http_code}' \
             --header "Accept: application/vnd.github+json" \
             --header "Authorization: Bearer ${GH_TOKEN}" \
             --header "X-GitHub-Api-Version: 2026-03-10" \
-            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/c72a551ea812dcb8426db0bb5b7270972002be11/cancel"
-          sleep 15
+            "${pages_api}/cancel")"
+          echo "Cancel request returned HTTP ${cancel_code}."
+          if [[ -s /tmp/pages-cancel.json ]]; then cat /tmp/pages-cancel.json; fi
+
+          for attempt in $(seq 1 48); do
+            status_code="$(curl --silent --show-error --location \
+              --output /tmp/pages-status.json --write-out '%{http_code}' \
+              --header "Accept: application/vnd.github+json" \
+              --header "Authorization: Bearer ${GH_TOKEN}" \
+              --header "X-GitHub-Api-Version: 2026-03-10" \
+              "${pages_api}")"
+            status="$(jq -r '.status // "unknown"' /tmp/pages-status.json 2>/dev/null || echo unknown)"
+            echo "Lock check ${attempt}: HTTP ${status_code}, status ${status}."
+            if [[ "${status_code}" == "404" || ("${status_code}" == "200" && "${status}" != "updating_pages" && "${status}" != "deployment_queued") ]]; then
+              sleep 10
+              exit 0
+            fi
+            sleep 5
+          done
+
+          echo "The stale Pages deployment lock did not clear in time."
+          exit 1
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
