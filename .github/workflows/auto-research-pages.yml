@@ -33,6 +33,19 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: oliver/auto_research_beamer_package/web-presentation/github-pages
+      # One earlier deployment timed out while GitHub still reported updating_pages.
+      # Canceling it here releases the Pages lock; 404 is harmless once it is gone.
+      - name: Clear stale Pages deployment lock
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          curl --silent --show-error --location --request POST \
+            --header "Accept: application/vnd.github+json" \
+            --header "Authorization: Bearer ${GH_TOKEN}" \
+            --header "X-GitHub-Api-Version: 2026-03-10" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/deployments/c72a551ea812dcb8426db0bb5b7270972002be11/cancel"
+          sleep 15
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
