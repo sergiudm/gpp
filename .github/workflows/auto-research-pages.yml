@@ -11,6 +11,7 @@ on:
 
 permissions:
   contents: read
+  deployments: write
   pages: write
   id-token: write
 
@@ -61,7 +62,16 @@ jobs:
             status="$(jq -r '.status // "unknown"' /tmp/pages-status.json 2>/dev/null || echo unknown)"
             echo "Lock check ${attempt}: HTTP ${status_code}, status ${status}."
             if [[ "${status_code}" == "404" || ("${status_code}" == "200" && "${status}" != "updating_pages" && "${status}" != "deployment_queued") ]]; then
-              sleep 10
+              delete_code="$(curl --silent --show-error --location --request DELETE \
+                --output /tmp/deployment-delete.json --write-out '%{http_code}' \
+                --header "Accept: application/vnd.github+json" \
+                --header "Authorization: Bearer ${GH_TOKEN}" \
+                --header "X-GitHub-Api-Version: 2026-03-10" \
+                "https://api.github.com/repos/${GITHUB_REPOSITORY}/deployments/6128081487")"
+              echo "Stale deployment record deletion returned HTTP ${delete_code}."
+              if [[ -s /tmp/deployment-delete.json ]]; then cat /tmp/deployment-delete.json; fi
+              [[ "${delete_code}" == "204" || "${delete_code}" == "404" ]] || exit 1
+              sleep 15
               exit 0
             fi
             sleep 5
