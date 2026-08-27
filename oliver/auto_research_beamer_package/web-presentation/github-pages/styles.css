@@ -121,10 +121,63 @@ h2 span, h2 em { color: var(--green); font-style: normal; }
 .summary-slide::after { background:rgba(255,255,255,.18); }
 
 .discussion-slide { display:grid; grid-template-columns:.74fr 1.26fr; align-items:center; gap:9%; }
-.discussion-questions p { margin:0; padding:4.5% 0; border-top:1px solid rgba(16,42,76,.2); display:grid; grid-template-columns:11% 1fr; gap:4%; align-items:start; }
+.discussion-slide::before { content:""; position:absolute; width:43%; aspect-ratio:1; left:10%; bottom:-34%; border:1px solid rgba(60,150,120,.28); border-radius:50%; opacity:0; transform:scale(.68) rotate(-18deg); }
+.discussion-slide header, .discussion-questions { position:relative; z-index:1; }
+.discussion-questions p { position:relative; margin:0; padding:4.5% 0; border-top:1px solid rgba(16,42,76,.2); display:grid; grid-template-columns:11% 1fr; gap:4%; align-items:start; }
+.discussion-questions p::after { content:""; position:absolute; left:0; bottom:-1px; width:100%; height:2px; background:linear-gradient(90deg,var(--green),rgba(60,150,120,0)); transform:scaleX(0); transform-origin:left; }
 .discussion-questions p:last-child { border-bottom:1px solid rgba(16,42,76,.2); }
 .discussion-questions b { color:var(--green); font-size:clamp(9px,1vw,16px); }
 .discussion-questions span { font-size:clamp(12px,1.55vw,25px); line-height:1.25; }
+
+/* Slide entrances stay brief so they support the presenter rather than compete with them. */
+.slide.is-active .eyebrow { animation:rise-in .48s cubic-bezier(.2,.8,.2,1) .06s both; }
+.slide.is-active h2 { animation:rise-in .58s cubic-bezier(.2,.8,.2,1) .12s both; }
+.title-slide.is-active .hero-title span { animation:rise-in .55s cubic-bezier(.2,.8,.2,1) .08s both; }
+.title-slide.is-active .hero-title strong { animation:rise-in .68s cubic-bezier(.2,.8,.2,1) .17s both; }
+.title-slide.is-active .hero-subtitle { animation:rise-in .52s cubic-bezier(.2,.8,.2,1) .32s both; }
+.title-slide.is-active .orbit-one { animation:orbit-drift 5.5s ease-in-out infinite alternate; }
+.title-slide.is-active .orbit-two { animation:orbit-drift 4.2s ease-in-out .4s infinite alternate-reverse; }
+.agenda-slide.is-active .question-list > div { animation:rise-in .5s cubic-bezier(.2,.8,.2,1) both; }
+.agenda-slide.is-active .question-list > div:nth-child(1) { animation-delay:.18s; }
+.agenda-slide.is-active .question-list > div:nth-child(2) { animation-delay:.29s; }
+.agenda-slide.is-active .question-list > div:nth-child(3) { animation-delay:.40s; }
+.process-slide.is-active .process-node, .process-slide.is-active .process-track > i { animation:process-pop .48s cubic-bezier(.16,1,.3,1) both; }
+.process-slide.is-active .process-track > :nth-child(1) { animation-delay:.20s; }
+.process-slide.is-active .process-track > :nth-child(2) { animation-delay:.27s; }
+.process-slide.is-active .process-track > :nth-child(3) { animation-delay:.34s; }
+.process-slide.is-active .process-track > :nth-child(4) { animation-delay:.41s; }
+.process-slide.is-active .process-track > :nth-child(5) { animation-delay:.48s; }
+.process-slide.is-active .process-track > :nth-child(6) { animation-delay:.55s; }
+.process-slide.is-active .process-track > :nth-child(7) { animation-delay:.62s; }
+.process-slide.is-active .process-caption { animation:rise-in .45s ease .68s both; }
+.verify-slide.is-active .fit-lines > div { animation:slide-in-right .58s cubic-bezier(.2,.8,.2,1) both; }
+.verify-slide.is-active .fit-lines > div:first-child { animation-delay:.22s; }
+.verify-slide.is-active .fit-lines > div:last-child { animation-delay:.38s; }
+.human-slide.is-active .human-points li { animation:rise-in .48s cubic-bezier(.2,.8,.2,1) both; }
+.human-slide.is-active .human-points li:nth-child(1) { animation-delay:.22s; }
+.human-slide.is-active .human-points li:nth-child(2) { animation-delay:.30s; }
+.human-slide.is-active .human-points li:nth-child(3) { animation-delay:.38s; }
+.human-slide.is-active .human-points li:nth-child(4) { animation-delay:.46s; }
+.summary-slide.is-active .summary-points li { animation:slide-in-right .52s cubic-bezier(.2,.8,.2,1) both; }
+.summary-slide.is-active .summary-points li:nth-child(1) { animation-delay:.20s; }
+.summary-slide.is-active .summary-points li:nth-child(2) { animation-delay:.32s; }
+.summary-slide.is-active .summary-points li:nth-child(3) { animation-delay:.44s; }
+.discussion-slide.is-active::before { animation:discussion-orbit .95s cubic-bezier(.16,1,.3,1) .05s both; }
+.discussion-slide.is-active header { animation:discussion-heading .7s cubic-bezier(.16,1,.3,1) .08s both; }
+.discussion-slide.is-active .discussion-questions p { animation:discussion-question .66s cubic-bezier(.16,1,.3,1) both; }
+.discussion-slide.is-active .discussion-questions p:nth-child(1) { animation-delay:.28s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(2) { animation-delay:.46s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(3) { animation-delay:.64s; }
+.discussion-slide.is-active .discussion-questions p::after { animation:line-draw .68s cubic-bezier(.2,.8,.2,1) both; }
+.discussion-slide.is-active .discussion-questions p:nth-child(1)::after { animation-delay:.45s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(2)::after { animation-delay:.63s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(3)::after { animation-delay:.81s; }
+.discussion-slide.is-active .discussion-questions b { animation:number-pop .42s cubic-bezier(.16,1.4,.3,1) both; }
+.discussion-slide.is-active .discussion-questions p:nth-child(1) b { animation-delay:.42s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(2) b { animation-delay:.60s; }
+.discussion-slide.is-active .discussion-questions p:nth-child(3) b { animation-delay:.78s; }
+.closing-slide.is-active h2 { animation:closing-in .75s cubic-bezier(.16,1,.3,1) .08s both; }
+.closing-slide.is-active .closing-line, .closing-slide.is-active small { animation:rise-in .5s ease .34s both; }
 
 .closing-slide { display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; background:linear-gradient(140deg,#0f2f50,#0b2038); color:#fff; }
 .closing-slide::after { background:rgba(255,255,255,.16); }
@@ -164,5 +217,17 @@ h2 span, h2 em { color: var(--green); font-style: normal; }
 }
 @media (prefers-reduced-motion: reduce) {
   .slide, .progress button, .deck-controls button { transition:none; }
+  .slide.is-active *, .slide.is-active::before, .timer.is-finished { animation:none !important; opacity:1 !important; transform:none !important; filter:none !important; clip-path:none !important; }
+  .discussion-questions p::after { transform:scaleX(1); }
 }
 @keyframes timer-pulse { 50% { background:rgba(255,100,90,.14); } }
+@keyframes rise-in { from { opacity:0; transform:translateY(18px); filter:blur(3px); } to { opacity:1; transform:translateY(0); filter:blur(0); } }
+@keyframes slide-in-right { from { opacity:0; transform:translateX(28px); } to { opacity:1; transform:translateX(0); } }
+@keyframes process-pop { from { opacity:0; transform:translateY(14px) scale(.94); } to { opacity:1; transform:translateY(0) scale(1); } }
+@keyframes orbit-drift { from { transform:translate3d(0,0,0) scale(1); } to { transform:translate3d(-10px,-8px,0) scale(1.04); } }
+@keyframes discussion-orbit { from { opacity:0; transform:scale(.68) rotate(-18deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+@keyframes discussion-heading { from { opacity:0; transform:translateX(-30px); } to { opacity:1; transform:translateX(0); } }
+@keyframes discussion-question { from { opacity:0; transform:translateX(42px); clip-path:inset(0 0 0 100%); } to { opacity:1; transform:translateX(0); clip-path:inset(0 0 0 0); } }
+@keyframes number-pop { from { opacity:0; transform:scale(.45) rotate(-12deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+@keyframes line-draw { from { transform:scaleX(0); } to { transform:scaleX(1); } }
+@keyframes closing-in { from { opacity:0; transform:scale(.82); letter-spacing:-.12em; } to { opacity:1; transform:scale(1); letter-spacing:-.075em; } }
